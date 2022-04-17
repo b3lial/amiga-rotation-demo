@@ -37,7 +37,7 @@ int main(void)
     //show screen and wait for mouse click
     ScreenToFront(mainScreen);
     WaitTOF();
-    while(!mouseClick){
+    while(!mouseCiaStatus()){
         WaitTOF();
     }
 
