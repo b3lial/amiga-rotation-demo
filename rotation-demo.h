@@ -33,6 +33,17 @@
 #include <hardware/cia.h>
 #include <hardware/dmabits.h>
 
+#include "starlight/blob_controller.h"
+#include "starlight/graphics_controller.h"
+#include "starlight/utils.h"
+
 #include "chunkyconverter/chunkyconverter.h"
+
+#define SHOWLOGO_BLOB_DEPTH 8
+#define SHOWLOGO_BLOB_COLORS 256
+#define SHOWLOGO_BLOB_WIDTH 320
+#define SHOWLOGO_BLOB_HEIGHT 256
+
+BOOL initScreen(void);
 
 #endif

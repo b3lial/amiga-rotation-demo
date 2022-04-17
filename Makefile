@@ -3,7 +3,8 @@ VASM=vasmm68k_mot
 VASMFLAGS=-Faout -devpac 
 CFLAGS = -D__far="" -DDEMO_DEBUG -Wall -O2 -I. -m68000
 LDFLAGS = -noixemul 
-SOURCES=main.c
+SOURCES=main.c starlight/blob_controller.c starlight/graphics_controller.c\
+  starlight/utils.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=rotation-demo.exe
 
