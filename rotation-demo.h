@@ -39,10 +39,10 @@
 
 #include "chunkyconverter/chunkyconverter.h"
 
-#define SHOWLOGO_BLOB_DEPTH 8
-#define SHOWLOGO_BLOB_COLORS 256
-#define SHOWLOGO_BLOB_WIDTH 320
-#define SHOWLOGO_BLOB_HEIGHT 256
+#define ROTATION_DEPTH 8
+#define ROTATION_COLORS 256
+#define ROTATION_WIDTH 320
+#define ROTATION_HEIGHT 256
 
 BOOL initScreen(void);
 
