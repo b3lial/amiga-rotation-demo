@@ -12,6 +12,7 @@ UWORD *colortable0;
 int main(void)
 {
     struct Screen *my_wbscreen_ptr;
+    initLog();
 
     // hide mouse
     emptyPointer = AllocVec(22 * sizeof(UWORD), MEMF_CHIP | MEMF_CLEAR);
@@ -35,10 +36,12 @@ int main(void)
 
     //show screen and wait for mouse click
     ScreenToFront(mainScreen);
+    WaitTOF();
     while(!mouseClick){
         WaitTOF();
     }
 
+    FreeVec(colortable0);
 _exit_free_screen:
     CloseScreen(mainScreen);
     WaitTOF();
