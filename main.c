@@ -66,6 +66,7 @@ int main(void)
         WaitTOF();
     }
 
+    FreeBitMap(rectBitmap);
 _exit_free_colortable:
     FreeVec(colortable0);
 _exit_free_screen:
