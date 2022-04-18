@@ -44,6 +44,13 @@
 #define ROTATION_WIDTH 320
 #define ROTATION_HEIGHT 256
 
+#define RECT_BITMAP_WIDTH 40
+#define RECT_BITMAP_HEIGHT 40
+#define RECT_WIDTH 20
+#define RECT_HEIGHT 20
+#define RECT_X 10
+#define RECT_Y 10
+
 BOOL initScreen(void);
 
 #endif
