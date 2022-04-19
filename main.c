@@ -10,8 +10,7 @@ struct BitMap *rectBitmap = NULL;
 struct Screen *mainScreen = NULL;
 UWORD *colortable0;
 
-int main(void)
-{
+int main(void) {
     struct Screen *my_wbscreen_ptr;
     struct RastPort rastPort = {0};
 
@@ -22,26 +21,23 @@ int main(void)
     UnlockPubScreen(NULL, my_wbscreen_ptr);
 
     // create pal screen
-    if (!initScreen())
-    {
+    if (!initScreen()) {
         goto _exit_main;
     }
 
     // create and assign colortable
     colortable0 = AllocVec(ROTATION_COLORS * sizeof(UWORD), MEMF_CHIP | MEMF_CLEAR);
-    if (!colortable0)
-    {
+    if (!colortable0) {
         printf("Error: Could not allocate memory for space bitmap color table\n");
         goto _exit_free_screen;
     }
-    colortable0[1] = 0x0f00; // color 1 == RED
+    colortable0[1] = 0x0f00;  // color 1 == RED
     LoadRGB4(&(mainScreen->ViewPort), colortable0, ROTATION_COLORS);
 
     // create bitmap with rectangle which we will use for rotation
     rectBitmap = AllocBitMap(RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT,
                              ROTATION_DEPTH, BMF_CLEAR, NULL);
-    if (!rectBitmap)
-    {
+    if (!rectBitmap) {
         printf("Error: Could not allocate memory for rectangle bitmap\n");
         goto _exit_free_colortable;
     }
@@ -54,16 +50,13 @@ int main(void)
              RECT_X + RECT_WIDTH,
              RECT_Y + RECT_HEIGHT);
 
-    BltBitMap(rectBitmap, 0, 0, mainBitmap, 0, 0,
-              RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT, 0x00C0,
-              0xff, NULL);
-
-    // show screen and wait for mouse click
+    // show rotation animation and wait for mouse click for exit
     ScreenToFront(mainScreen);
     WaitTOF();
-    while (!mouseCiaStatus())
-    {
+    while (!mouseCiaStatus()) {
+        calculateRotation();
         WaitTOF();
+        performRotation();
     }
 
     FreeBitMap(rectBitmap);
@@ -83,14 +76,21 @@ _exit_main:
     exit(RETURN_OK);
 }
 
-BOOL initScreen(void)
-{
+void calculateRotation(void) {
+}
+
+void performRotation(void) {
+    BltBitMap(rectBitmap, 0, 0, mainBitmap, 0, 0,
+              RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT, 0x00C0,
+              0xff, NULL);
+}
+
+BOOL initScreen(void) {
     // load onscreen bitmap which will be shown on screen
     mainBitmap = AllocBitMap(ROTATION_WIDTH, ROTATION_HEIGHT,
                              ROTATION_DEPTH, BMF_DISPLAYABLE | BMF_CLEAR,
                              NULL);
-    if (!mainBitmap)
-    {
+    if (!mainBitmap) {
         printf("Error: Could not allocate memory for screen bitmap\n");
         goto __exit_init_error;
     }
@@ -99,8 +99,7 @@ BOOL initScreen(void)
     mainScreen = createScreen(mainBitmap, TRUE, 0, 0,
                               ROTATION_WIDTH, ROTATION_HEIGHT,
                               ROTATION_DEPTH, NULL);
-    if (!mainScreen)
-    {
+    if (!mainScreen) {
         printf("Error: Could not allocate memory for logo screen\n");
         goto __exit_init_bitmap;
     }

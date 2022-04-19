@@ -52,5 +52,7 @@
 #define RECT_Y 10
 
 BOOL initScreen(void);
+void calculateRotation(void);
+void performRotation(void);
 
 #endif
