@@ -32,7 +32,8 @@ int main(void)
 
     // allocate memory for chunky buffer
     chunkyBuffer = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, NULL);
-    if(!chunkyBuffer){
+    if (!chunkyBuffer)
+    {
         printf("Error: Could not allocate memory for chunky buffer\n");
         goto _exit_free_screen;
     }
@@ -108,8 +109,8 @@ void calculateRotation(void)
 
 void performRotation(void)
 {
-    BltBitMap(rectBitmap, RECT_BITMAP_POS_X, RECT_BITMAP_POS_Y,
-              mainBitmap, 0, 0,
+    BltBitMap(rectBitmap, 0, 0, mainBitmap,
+              RECT_BITMAP_POS_X, RECT_BITMAP_POS_Y,
               RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT, 0x00C0,
               0xff, NULL);
 }
