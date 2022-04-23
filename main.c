@@ -5,9 +5,12 @@
 // empty mouse pointer because we dont want to see a mouse
 UWORD *emptyPointer;
 
-struct BitMap *mainBitmap = NULL;
+struct BitMap *mainBitmap1 = NULL;
+struct BitMap *mainBitmap2 = NULL;
 struct BitMap *rectBitmap = NULL;
-struct Screen *mainScreen = NULL;
+
+struct Screen *mainScreen1 = NULL;
+struct Screen *mainScreen2 = NULL;
 struct Screen *my_wbscreen_ptr;
 
 UWORD *colortable0;
@@ -24,10 +27,14 @@ int main(void)
     SetPointer(my_wbscreen_ptr->FirstWindow, emptyPointer, 8, 8, -6, 0);
     UnlockPubScreen(NULL, my_wbscreen_ptr);
 
-    // create pal screen
-    if (!initScreen(&mainBitmap, &mainScreen))
+    // create pal screens for double buffering
+    if (!initScreen(&mainBitmap1, &mainScreen1))
     {
         goto _exit_main;
+    }
+    if (!initScreen(&mainBitmap2, &mainScreen2))
+    {
+        goto _exit_free_first_screen;
     }
 
     // allocate memory for chunky buffer
@@ -35,7 +42,7 @@ int main(void)
     if (!chunkyBuffer)
     {
         printf("Error: Could not allocate memory for chunky buffer\n");
-        goto _exit_free_screen;
+        goto _exit_free_second_screen;
     }
 
     // create and assign colortable
@@ -46,7 +53,7 @@ int main(void)
         goto _exit_free_chunky;
     }
     colortable0[1] = 0x0f00; // color 1 == RED
-    LoadRGB4(&(mainScreen->ViewPort), colortable0, ROTATION_COLORS);
+    LoadRGB4(&(mainScreen1->ViewPort), colortable0, ROTATION_COLORS);
 
     // create bitmap with rectangle which we will use for rotation
     rectBitmap = AllocBitMap(RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT,
@@ -75,7 +82,7 @@ int main(void)
     PlanarToChunkyAsm(&p2c);
 
     // show rotation animation and wait for mouse click for exit
-    ScreenToFront(mainScreen);
+    ScreenToFront(mainScreen1);
     WaitTOF();
     while (!mouseCiaStatus())
     {
@@ -89,10 +96,14 @@ _exit_free_colortable:
     FreeVec(colortable0);
 _exit_free_chunky:
     FreeVec(chunkyBuffer);
-_exit_free_screen:
-    CloseScreen(mainScreen);
+_exit_free_second_screen:
+    CloseScreen(mainScreen2);
     WaitTOF();
-    FreeBitMap(mainBitmap);
+    FreeBitMap(mainBitmap2);
+_exit_free_first_screen:
+    CloseScreen(mainScreen1);
+    WaitTOF();
+    FreeBitMap(mainBitmap1);
 _exit_main:
     // restore mouse
     my_wbscreen_ptr = LockPubScreen("Workbench");
@@ -109,7 +120,7 @@ void calculateRotation(void)
 
 void performRotation(void)
 {
-    BltBitMap(rectBitmap, 0, 0, mainBitmap,
+    BltBitMap(rectBitmap, 0, 0, mainBitmap1,
               RECT_BITMAP_POS_X, RECT_BITMAP_POS_Y,
               RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT, 0x00C0,
               0xff, NULL);
