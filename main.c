@@ -2,9 +2,6 @@
 
 #include "rotation-demo.h"
 
-// empty mouse pointer because we dont want to see a mouse
-UWORD *emptyPointer;
-
 struct BitMap *mainBitmap1 = NULL;
 struct BitMap *mainBitmap2 = NULL;
 struct BitMap *rectBitmap = NULL;
@@ -13,8 +10,17 @@ struct Screen *mainScreen1 = NULL;
 struct Screen *mainScreen2 = NULL;
 struct Screen *my_wbscreen_ptr;
 
+// empty mouse pointer because we dont want to see a mouse
+UWORD *emptyPointer;
+
+// used for double buffering
+BOOL bufferSelector;
+struct BitMap *currentBitmap = NULL;
+struct Screen *currentScreen = NULL;
+
 UWORD *colortable0;
-UBYTE *chunkyBuffer;
+UBYTE *srcBuffer;
+UBYTE *destBuffer;
 
 int main(void)
 {
@@ -36,13 +42,22 @@ int main(void)
     {
         goto _exit_free_first_screen;
     }
+    bufferSelector = TRUE;
+    currentScreen = mainScreen1; // main screen turn on ;)
+    currentBitmap = mainBitmap1;
 
     // allocate memory for chunky buffer
-    chunkyBuffer = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, NULL);
-    if (!chunkyBuffer)
+    srcBuffer = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, NULL);
+    if (!srcBuffer)
     {
-        printf("Error: Could not allocate memory for chunky buffer\n");
+        printf("Error: Could not allocate memory for source chunky buffer\n");
         goto _exit_free_second_screen;
+    }
+    destBuffer = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, NULL);
+    if (!destBuffer)
+    {
+        printf("Error: Could not allocate memory for destination chunky buffer\n");
+        goto _exit_free_src_chunky;
     }
 
     // create and assign colortable
@@ -50,7 +65,7 @@ int main(void)
     if (!colortable0)
     {
         printf("Error: Could not allocate memory for space bitmap color table\n");
-        goto _exit_free_chunky;
+        goto _exit_free_dest_chunky;
     }
     colortable0[1] = 0x0f00; // color 1 == RED
     LoadRGB4(&(mainScreen1->ViewPort), colortable0, ROTATION_COLORS);
@@ -78,24 +93,28 @@ int main(void)
     p2c.startY = 0;
     p2c.width = RECT_BITMAP_WIDTH;
     p2c.height = RECT_BITMAP_HEIGHT;
-    p2c.chunkybuffer = chunkyBuffer;
+    p2c.chunkybuffer = srcBuffer;
     PlanarToChunkyAsm(&p2c);
 
     // show rotation animation and wait for mouse click for exit
-    ScreenToFront(mainScreen1);
+    ScreenToFront(currentScreen);
     WaitTOF();
     while (!mouseCiaStatus())
     {
+        switchScreenData();
         calculateRotation();
-        WaitTOF();
         performRotation();
+        WaitTOF();
+        ScreenToFront(currentScreen);
     }
 
     FreeBitMap(rectBitmap);
 _exit_free_colortable:
     FreeVec(colortable0);
-_exit_free_chunky:
-    FreeVec(chunkyBuffer);
+_exit_free_dest_chunky:
+    FreeVec(destBuffer);
+_exit_free_src_chunky:
+    FreeVec(srcBuffer);
 _exit_free_second_screen:
     CloseScreen(mainScreen2);
     WaitTOF();
@@ -114,13 +133,38 @@ _exit_main:
     exit(RETURN_OK);
 }
 
+void switchScreenData()
+{
+    if (bufferSelector)
+    {
+        currentScreen = mainScreen2;
+        currentBitmap = mainBitmap2;
+        bufferSelector = FALSE;
+    }
+    else
+    {
+        currentScreen = mainScreen1;
+        currentBitmap = mainBitmap1;
+        bufferSelector = TRUE;
+    }
+}
+
 void calculateRotation(void)
 {
+    struct c2pStruct c2p;
+    memcpy(destBuffer, srcBuffer, RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT);
+    c2p.bmap = rectBitmap;
+    c2p.startX = 0;
+    c2p.startY = 0;
+    c2p.width = RECT_BITMAP_WIDTH;
+    c2p.height = RECT_BITMAP_HEIGHT;
+    c2p.chunkybuffer = destBuffer;
+    ChunkyToPlanarAsm(&c2p);
 }
 
 void performRotation(void)
 {
-    BltBitMap(rectBitmap, 0, 0, mainBitmap1,
+    BltBitMap(rectBitmap, 0, 0, currentBitmap,
               RECT_BITMAP_POS_X, RECT_BITMAP_POS_Y,
               RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT, 0x00C0,
               0xff, NULL);
@@ -130,8 +174,8 @@ BOOL initScreen(struct BitMap **b, struct Screen **s)
 {
     // load onscreen bitmap which will be shown on screen
     *b = AllocBitMap(ROTATION_WIDTH, ROTATION_HEIGHT,
-                             ROTATION_DEPTH, BMF_DISPLAYABLE | BMF_CLEAR,
-                             NULL);
+                     ROTATION_DEPTH, BMF_DISPLAYABLE | BMF_CLEAR,
+                     NULL);
     if (!*b)
     {
         printf("Error: Could not allocate memory for screen bitmap\n");
@@ -140,8 +184,8 @@ BOOL initScreen(struct BitMap **b, struct Screen **s)
 
     // create one screen which contains the demo logo
     *s = createScreen(*b, TRUE, 0, 0,
-                              ROTATION_WIDTH, ROTATION_HEIGHT,
-                              ROTATION_DEPTH, NULL);
+                      ROTATION_WIDTH, ROTATION_HEIGHT,
+                      ROTATION_DEPTH, NULL);
     if (!*s)
     {
         printf("Error: Could not allocate memory for logo screen\n");

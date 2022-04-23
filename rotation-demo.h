@@ -56,5 +56,6 @@
 BOOL initScreen(struct BitMap **bm, struct Screen **s);
 void calculateRotation(void);
 void performRotation(void);
+void switchScreenData();
 
 #endif
