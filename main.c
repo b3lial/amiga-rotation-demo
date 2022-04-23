@@ -25,7 +25,7 @@ int main(void)
     UnlockPubScreen(NULL, my_wbscreen_ptr);
 
     // create pal screen
-    if (!initScreen())
+    if (!initScreen(&mainBitmap, &mainScreen))
     {
         goto _exit_main;
     }
@@ -115,23 +115,23 @@ void performRotation(void)
               0xff, NULL);
 }
 
-BOOL initScreen(void)
+BOOL initScreen(struct BitMap **b, struct Screen **s)
 {
     // load onscreen bitmap which will be shown on screen
-    mainBitmap = AllocBitMap(ROTATION_WIDTH, ROTATION_HEIGHT,
+    *b = AllocBitMap(ROTATION_WIDTH, ROTATION_HEIGHT,
                              ROTATION_DEPTH, BMF_DISPLAYABLE | BMF_CLEAR,
                              NULL);
-    if (!mainBitmap)
+    if (!*b)
     {
         printf("Error: Could not allocate memory for screen bitmap\n");
         goto __exit_init_error;
     }
 
     // create one screen which contains the demo logo
-    mainScreen = createScreen(mainBitmap, TRUE, 0, 0,
+    *s = createScreen(*b, TRUE, 0, 0,
                               ROTATION_WIDTH, ROTATION_HEIGHT,
                               ROTATION_DEPTH, NULL);
-    if (!mainScreen)
+    if (!*s)
     {
         printf("Error: Could not allocate memory for logo screen\n");
         goto __exit_init_bitmap;
@@ -139,7 +139,7 @@ BOOL initScreen(void)
     return TRUE;
 
 __exit_init_bitmap:
-    FreeBitMap(mainBitmap);
+    FreeBitMap(*b);
 __exit_init_error:
     return FALSE;
 }

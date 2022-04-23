@@ -53,7 +53,7 @@
 #define RECT_X 10
 #define RECT_Y 10
 
-BOOL initScreen(void);
+BOOL initScreen(struct BitMap **bm, struct Screen **s);
 void calculateRotation(void);
 void performRotation(void);
 
