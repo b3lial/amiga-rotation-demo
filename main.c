@@ -69,6 +69,8 @@ int main(void)
     }
     colortable0[1] = 0x0f00; // color 1 == RED
     LoadRGB4(&(mainScreen1->ViewPort), colortable0, ROTATION_COLORS);
+    LoadRGB4(&(mainScreen2->ViewPort), colortable0, ROTATION_COLORS);
+
 
     // create bitmap with rectangle which we will use for rotation
     rectBitmap = AllocBitMap(RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT,
