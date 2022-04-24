@@ -53,9 +53,12 @@
 #define RECT_X 10
 #define RECT_Y 10
 
+#define DEGREE_RESOLUTION 10
+
 BOOL initScreen(struct BitMap **bm, struct Screen **s);
 void calculateRotation(void);
 void performRotation(void);
 void switchScreenData();
+int rotatePixel(int index, int degree);
 
 #endif

@@ -4,7 +4,7 @@ VASMFLAGS=-Faout -devpac
 CFLAGS = -D__far="" -Wall -O2 -I. -m68000
 LDFLAGS = -noixemul 
 SOURCES=main.c starlight/graphics_controller.c\
-  starlight/utils.c
+  starlight/utils.c rotation.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=rotation-demo.exe
 
