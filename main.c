@@ -71,7 +71,6 @@ int main(void)
     LoadRGB4(&(mainScreen1->ViewPort), colortable0, ROTATION_COLORS);
     LoadRGB4(&(mainScreen2->ViewPort), colortable0, ROTATION_COLORS);
 
-
     // create bitmap with rectangle which we will use for rotation
     rectBitmap = AllocBitMap(RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT,
                              ROTATION_DEPTH, BMF_CLEAR, NULL);
@@ -104,7 +103,8 @@ int main(void)
     while (!mouseCiaStatus())
     {
         switchScreenData();
-        calculateRotation();
+        calculateRotation(srcBuffer, destBuffer,
+                          RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT);
         performRotation();
         WaitTOF();
         ScreenToFront(currentScreen);
@@ -151,10 +151,14 @@ void switchScreenData()
     }
 }
 
-void calculateRotation(void)
+void calculateRotation(UBYTE *src, UBYTE *dest, unsigned int size)
+{
+    memcpy(dest, src, size);
+}
+
+void performRotation(void)
 {
     struct c2pStruct c2p;
-    memcpy(destBuffer, srcBuffer, RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT);
     c2p.bmap = rectBitmap;
     c2p.startX = 0;
     c2p.startY = 0;
@@ -162,10 +166,7 @@ void calculateRotation(void)
     c2p.height = RECT_BITMAP_HEIGHT;
     c2p.chunkybuffer = destBuffer;
     ChunkyToPlanarAsm(&c2p);
-}
 
-void performRotation(void)
-{
     BltBitMap(rectBitmap, 0, 0, currentBitmap,
               RECT_BITMAP_POS_X, RECT_BITMAP_POS_Y,
               RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT, 0x00C0,
