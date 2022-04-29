@@ -90,6 +90,7 @@ void rotatePixel(int x, int y, int* new_x, int* new_y){
 void rotate(UBYTE *src, UBYTE *dest, unsigned int size)
 {
     int x, y;
+    int src_index, dst_index;
     int x_base, y_base;
     int new_x, new_y;
 
