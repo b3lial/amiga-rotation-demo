@@ -79,3 +79,12 @@ float sinLookup[] = {\
 int rotatePixel(int index, int degree){
     return 0;
 }
+
+void rotate(UBYTE *src, UBYTE *dest, unsigned int size)
+{
+    UWORD i;
+    for(i=0;i<size;i++){
+
+    }
+    memcpy(dest, src, size);
+}

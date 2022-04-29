@@ -103,9 +103,9 @@ int main(void)
     while (!mouseCiaStatus())
     {
         switchScreenData();
-        calculateRotation(srcBuffer, destBuffer,
+        rotate(srcBuffer, destBuffer,
                           RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT);
-        performRotation();
+        blitRotationResult();
         WaitTOF();
         ScreenToFront(currentScreen);
     }
@@ -151,12 +151,7 @@ void switchScreenData()
     }
 }
 
-void calculateRotation(UBYTE *src, UBYTE *dest, unsigned int size)
-{
-    memcpy(dest, src, size);
-}
-
-void performRotation(void)
+void blitRotationResult(void)
 {
     struct c2pStruct c2p;
     c2p.bmap = rectBitmap;
