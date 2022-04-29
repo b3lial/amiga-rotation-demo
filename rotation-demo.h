@@ -59,6 +59,6 @@ BOOL initScreen(struct BitMap **bm, struct Screen **s);
 void rotate(UBYTE* src, UBYTE* dest, unsigned int size);
 void blitRotationResult(void);
 void switchScreenData();
-int rotatePixel(int index, int degree);
+void rotatePixel(int x, int y, int* new_x, int* new_y);
 
 #endif
