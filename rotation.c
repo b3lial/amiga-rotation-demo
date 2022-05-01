@@ -81,10 +81,13 @@ float sinLookup[] = {\
 // apply rotation matrix
 void rotatePixel(int x, int y, int* new_x, int* new_y){
     float f_x, f_y;
+    UWORD i;
     f_x = (float) x;
     f_y = (float) y;
-    *new_x = (int)(f_x * cosLookup[currentDegree] - f_y * sinLookup[currentDegree]);
-    *new_y = (int)(f_x * sinLookup[currentDegree] + f_y * cosLookup[currentDegree]);
+
+    i = currentDegree / DEGREE_RESOLUTION - 1;
+    *new_x = (int)(f_x * cosLookup[i] - f_y * sinLookup[i]);
+    *new_y = (int)(f_x * sinLookup[i] + f_y * cosLookup[i]);
 }
 
 void rotate(UBYTE *src, UBYTE *dest, unsigned int size)
