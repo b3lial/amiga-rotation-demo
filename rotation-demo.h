@@ -46,12 +46,12 @@
 
 #define RECT_BITMAP_POS_X 100
 #define RECT_BITMAP_POS_Y 100
-#define RECT_BITMAP_WIDTH 40
-#define RECT_BITMAP_HEIGHT 40
-#define RECT_WIDTH 20
-#define RECT_HEIGHT 20
-#define RECT_X 10
-#define RECT_Y 10
+#define RECT_BITMAP_WIDTH 80
+#define RECT_BITMAP_HEIGHT 80
+#define RECT_WIDTH 40
+#define RECT_HEIGHT 40
+#define RECT_X 20
+#define RECT_Y 20
 
 #define DEGREE_RESOLUTION 10
 
