@@ -93,7 +93,7 @@ void rotatePixel(int x, int y, int* new_x, int* new_y){
 void rotate(UBYTE *src, UBYTE *dest, unsigned int size)
 {
     int x, y;
-    int src_index, dst_index;
+    int src_index, dest_index;
     int x_base, y_base;
     int new_x, new_y;
 
@@ -106,13 +106,21 @@ void rotate(UBYTE *src, UBYTE *dest, unsigned int size)
 
     // iterate over array we want to rotate
     memset(dest,0,size);
-    for (x = 0; x < RECT_X; x++) {
-        for (y = 0; y < RECT_Y; y++) {
-            // convert x,y -> middle of coordinates
+    for (y = 0; y < RECT_HEIGHT; y++) {
+        for (x = 0; x < RECT_WIDTH; x++) {
+            // change middle of coordinate system to
+            // rotate object around itw own axis
+            x_base = x - (RECT_WIDTH / 2);
+            y_base = (RECT_HEIGHT / 2) - y;
+
             // convert x,y -> array index
-            rotatePixel(x, y, &new_x, &new_y);
-            // convert middle of coordinates -> array index
-            // write src -> dest
+            rotatePixel(x_base, y_base, &new_x, &new_y);
+
+            // convert coordinates back to array indexes
+            // so we can move the rotated pixel to its new position
+            src_index = (x+RECT_X) + ((y+RECT_Y)*RECT_BITMAP_WIDTH);
+            dest_index = (new_x+(RECT_WIDTH / 2)+RECT_X) + (((-1*new_y+(RECT_HEIGHT / 2))+RECT_Y)*RECT_BITMAP_WIDTH);
+            dest[dest_index] = src[src_index];
         }
     }
 
