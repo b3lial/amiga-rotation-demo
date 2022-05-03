@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <ctype.h>
+#include <math.h>
 
 #include <clib/graphics_protos.h>
 #include <clib/exec_protos.h>
@@ -59,6 +60,6 @@ BOOL initScreen(struct BitMap **bm, struct Screen **s);
 void rotate(UBYTE* src, UBYTE* dest, unsigned int size);
 void blitRotationResult(void);
 void switchScreenData();
-void rotatePixel(int x, int y, int* new_x, int* new_y);
+void rotatePixel(int x, int y, float* new_x, float* new_y);
 
 #endif

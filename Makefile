@@ -17,7 +17,7 @@ p2c.o: chunkyconverter/p2c.s
 	$(VASM) $(VASMFLAGS) -o p2c.o chunkyconverter/p2c.s
 
 $(EXECUTABLE): $(OBJECTS) p2c.o c2p.o
-	$(CC) $(LDFLAGS) $(OBJECTS) p2c.o c2p.o -o $@
+	$(CC) $(LDFLAGS) $(OBJECTS) p2c.o c2p.o -lm -o $@
 	
 clean: 
 	rm *.o *.lnk *.info *.uaem $(EXECUTABLE)

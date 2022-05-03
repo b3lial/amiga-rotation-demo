@@ -68,6 +68,13 @@ int main(void)
         goto _exit_free_dest_chunky;
     }
     colortable0[1] = 0x0f00; // color 1 == RED
+    colortable0[2] = 0x00f0; // color 1 == RED
+    colortable0[3] = 0x000f; // color 1 == RED
+    colortable0[4] = 0x0f0f; // color 1 == RED
+    colortable0[5] = 0x00ff; // color 1 == RED
+    colortable0[6] = 0x0ff0; // color 1 == RED
+    colortable0[7] = 0x0fff; // color 1 == RED
+
     LoadRGB4(&(mainScreen1->ViewPort), colortable0, ROTATION_COLORS);
     LoadRGB4(&(mainScreen2->ViewPort), colortable0, ROTATION_COLORS);
 
