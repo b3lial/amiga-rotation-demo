@@ -85,7 +85,7 @@ void rotatePixel(int dest_x, int dest_y, int* src_x, int* src_y){
     f_x = (float) dest_x;
     f_y = (float) dest_y;
 
-    i = currentDegree / DEGREE_RESOLUTION - 1;
+    i = (360 - currentDegree) / DEGREE_RESOLUTION - 1;
     *src_x = (int)(f_x * cosLookup[i] - f_y * sinLookup[i]);
     *src_y = (int)(f_x * sinLookup[i] + f_y * cosLookup[i]);
 }
@@ -118,8 +118,8 @@ void rotate(UBYTE *src, UBYTE *dest, unsigned int size)
 
             // convert coordinates back to array indexes
             // so we can move the rotated pixel to its new position
-            src_index = (x+RECT_X) + ((y+RECT_Y)*RECT_BITMAP_WIDTH);
-            dest_index = (src_x+(RECT_WIDTH / 2)+RECT_X) + (((-1*src_y+(RECT_HEIGHT / 2))+RECT_Y)*RECT_BITMAP_WIDTH);
+            dest_index = (x+RECT_X) + ((y+RECT_Y)*RECT_BITMAP_WIDTH);
+            src_index = (src_x+(RECT_WIDTH / 2)+RECT_X) + (((-1*src_y+(RECT_HEIGHT / 2))+RECT_Y)*RECT_BITMAP_WIDTH);
             dest[dest_index] = src[src_index];
         }
     }
