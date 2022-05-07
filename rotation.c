@@ -106,20 +106,23 @@ void rotate(UBYTE *src, UBYTE *dest, unsigned int size)
 
     // iterate over destination array
     memset(dest,0,size);
-    for (y = 0; y < RECT_HEIGHT; y++) {
-        for (x = 0; x < RECT_WIDTH; x++) {
+    for (y = 0; y < RECT_BITMAP_HEIGHT; y++) {
+        for (x = 0; x < RECT_BITMAP_WIDTH; x++) {
             // change middle of coordinate system to
             // rotate object around itw own axis
-            dest_x = x - (RECT_WIDTH / 2);
-            dest_y = (RECT_HEIGHT / 2) - y;
+            dest_x = x - (RECT_BITMAP_WIDTH / 2);
+            dest_y = (RECT_BITMAP_HEIGHT / 2) - y;
 
             // calculate src x/y coordinates
             rotatePixel(dest_x, dest_y, &src_x, &src_y);
 
             // convert coordinates back to array indexes
             // so we can move the rotated pixel to its new position
-            dest_index = (x+RECT_X) + ((y+RECT_Y)*RECT_BITMAP_WIDTH);
-            src_index = (src_x+(RECT_WIDTH / 2)+RECT_X) + (((-1*src_y+(RECT_HEIGHT / 2))+RECT_Y)*RECT_BITMAP_WIDTH);
+            dest_index = x + y*RECT_BITMAP_WIDTH;
+            src_index = (src_x+(RECT_BITMAP_WIDTH / 2)) + ((src_y+(RECT_BITMAP_HEIGHT / 2))*RECT_BITMAP_WIDTH);
+            if(src_index < 0 || src_index >= size){
+                continue;
+            }
             dest[dest_index] = src[src_index];
         }
     }
