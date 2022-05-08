@@ -105,7 +105,6 @@ void rotate(UBYTE *src, UBYTE *dest, unsigned int size)
     }
 
     // iterate over destination array
-    memset(dest,0,size);
     for (y = 0; y < RECT_BITMAP_HEIGHT; y++) {
         for (x = 0; x < RECT_BITMAP_WIDTH; x++) {
             // change middle of coordinate system to
