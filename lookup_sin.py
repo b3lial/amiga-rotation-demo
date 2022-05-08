@@ -4,7 +4,7 @@ import math
 STEP = 10
 
 print("float sinLookup[] = {\\")
-for i in range(STEP, 360, STEP):
+for i in range(0, 360, STEP):
     lookup_element = math.sin(math.radians(i))
     lookup_element = round(lookup_element, 5)
 
