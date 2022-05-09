@@ -55,8 +55,16 @@
 
 #define DEGREE_RESOLUTION 10
 
+struct RotationData{
+    UBYTE* src;
+    UBYTE* dest;
+    USHORT angle;
+    USHORT width;
+    USHORT height;
+};
+
 BOOL initScreen(struct BitMap **bm, struct Screen **s);
-void rotate(UBYTE *src, UBYTE *dest, unsigned int size);
+void rotate(struct RotationData *rd);
 void blitRotationResult(void);
 void switchScreenData();
 void rotatePixel(int dest_x, int *new_x, int *new_y,

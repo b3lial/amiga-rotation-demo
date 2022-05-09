@@ -26,6 +26,7 @@ int main(void)
 {
     struct RastPort rastPort = {0};
     struct p2cStruct p2c = {0};
+    struct RotationData rd = {0};
 
     // hide mouse
     emptyPointer = AllocVec(22 * sizeof(UWORD), MEMF_CHIP | MEMF_CLEAR);
@@ -47,13 +48,13 @@ int main(void)
     currentBitmap = mainBitmap1;
 
     // allocate memory for chunky buffer
-    srcBuffer = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, NULL);
+    srcBuffer = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, MEMF_FAST);
     if (!srcBuffer)
     {
         printf("Error: Could not allocate memory for source chunky buffer\n");
         goto _exit_free_second_screen;
     }
-    destBuffer = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, NULL);
+    destBuffer = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, MEMF_FAST);
     if (!destBuffer)
     {
         printf("Error: Could not allocate memory for destination chunky buffer\n");
@@ -100,14 +101,18 @@ int main(void)
     // show rotation animation and wait for mouse click for exit
     ScreenToFront(currentScreen);
     WaitTOF();
+    rd.angle = DEGREE_RESOLUTION;
+    rd.src = srcBuffer;
+    rd.dest = destBuffer;
+    rd.width = RECT_BITMAP_WIDTH;
+    rd.height = RECT_BITMAP_HEIGHT;
     while (!mouseCiaStatus())
     {
         switchScreenData();
-        rotate(srcBuffer, destBuffer,
-                          RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT);
+        rotate(&rd);
         blitRotationResult();
-        WaitTOF();
         ScreenToFront(currentScreen);
+        rd.angle = (rd.angle == 360) ? 10 : rd.angle + DEGREE_RESOLUTION;
     }
 
     FreeBitMap(rectBitmap);

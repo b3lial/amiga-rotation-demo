@@ -90,7 +90,7 @@ void rotatePixel(int dest_x, int *src_x, int *src_y,
     *src_y = (int)(f_x * sinLookup[i] + y_mult_cos);
 }
 
-void rotate(UBYTE *src, UBYTE *dest, unsigned int size)
+void rotate(struct RotationData *rd)
 {
     int x, y;
     int src_index, dest_index;
@@ -100,34 +100,31 @@ void rotate(UBYTE *src, UBYTE *dest, unsigned int size)
     UWORD lookupIndex;
 
     // iterate over destination array
-    lookupIndex = (360 - currentDegree) / DEGREE_RESOLUTION;
-    for (y = 0; y < RECT_BITMAP_HEIGHT; y++)
+    lookupIndex = (360 - rd->angle) / DEGREE_RESOLUTION;
+    for (y = 0; y < rd->height; y++)
     {
         // precalculate these values to speed things up
-        dest_y = (RECT_BITMAP_HEIGHT / 2) - y;
+        dest_y = (rd->height / 2) - y;
         y_mult_sin = ((float) dest_y) * sinLookup[lookupIndex];
         y_mult_cos = ((float) dest_y) * cosLookup[lookupIndex];
 
-        for (x = 0; x < RECT_BITMAP_WIDTH; x++)
+        for (x = 0; x < rd->width; x++)
         {
             // calculate src x/y coordinates
-            dest_x = x - (RECT_BITMAP_WIDTH / 2);
+            dest_x = x - (rd->width / 2);
             rotatePixel(dest_x, &src_x, &src_y,
                         y_mult_sin, y_mult_cos, lookupIndex);
 
             // convert coordinates back to array indexes
             // so we can move the rotated pixel to its new position
-            dest_index = x + y * RECT_BITMAP_WIDTH;
-            src_index = (src_x + (RECT_BITMAP_WIDTH / 2)) +
-                        ((src_y + (RECT_BITMAP_HEIGHT / 2)) * RECT_BITMAP_WIDTH);
-            if (src_index < 0 || src_index >= size)
+            dest_index = x + y * rd->width;
+            src_index = (src_x + (rd->width / 2)) +
+                        ((src_y + (rd->height / 2)) * rd->width);
+            if (src_index < 0 || src_index >= (rd->height * rd->width))
             {
                 continue;
             }
-            dest[dest_index] = src[src_index];
+            (rd->dest)[dest_index] = (rd->src)[src_index];
         }
     }
-
-    // after one full rotation, begin again at 0 degrees
-    currentDegree = (currentDegree == 360) ? 10 : currentDegree + DEGREE_RESOLUTION;
 }
