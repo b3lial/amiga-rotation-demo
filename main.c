@@ -48,13 +48,13 @@ int main(void)
     currentBitmap = mainBitmap1;
 
     // allocate memory for chunky buffer
-    srcBuffer = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, MEMF_FAST);
+    srcBuffer = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, MEMF_FAST | MEMF_CLEAR);
     if (!srcBuffer)
     {
         printf("Error: Could not allocate memory for source chunky buffer\n");
         goto _exit_free_second_screen;
     }
-    destBuffer = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, MEMF_FAST);
+    destBuffer = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, MEMF_FAST | MEMF_CLEAR);
     if (!destBuffer)
     {
         printf("Error: Could not allocate memory for destination chunky buffer\n");
