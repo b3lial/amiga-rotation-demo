@@ -194,12 +194,11 @@ void blitRotationResult(void)
     c2p.height = RECT_BITMAP_HEIGHT;
     c2p.chunkybuffer = destBuffer;
     ChunkyToPlanarAsm(&c2p);
-
+#endif
     BltBitMap(rectBitmap, 0, 0, currentBitmap,
               RECT_BITMAP_POS_X, RECT_BITMAP_POS_Y,
               RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT, 0x00C0,
               0xff, NULL);
-#endif
 }
 
 BOOL initScreen(struct BitMap **b, struct Screen **s)
