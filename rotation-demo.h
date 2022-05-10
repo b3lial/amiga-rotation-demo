@@ -39,6 +39,8 @@
 
 #include "chunkyconverter/chunkyconverter.h"
 
+#define NATIVE_CONVERTER
+
 #define ROTATION_DEPTH 1
 #define ROTATION_COLORS 2
 #define ROTATION_WIDTH 320

@@ -158,6 +158,34 @@ void switchScreenData()
 
 void blitRotationResult(void)
 {
+#ifdef NATIVE_CONVERTER
+    struct RastPort rastPort1 = {0};
+    struct RastPort rastPort2 = {0};
+    struct BitMap *tempBitmap = NULL;
+    UWORD backupBytesPerRow;
+    UWORD backupRows;
+
+    InitRastPort(&rastPort1);
+    InitRastPort(&rastPort2);
+
+    rastPort1.BitMap = rectBitmap;
+
+    tempBitmap = AllocBitMap(RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT,
+                             ROTATION_DEPTH, BMF_CLEAR, NULL);
+    rastPort2.Layer = NULL;
+    backupRows = tempBitmap->Rows;
+    tempBitmap->Rows = 1;
+    backupBytesPerRow = tempBitmap->BytesPerRow;
+    tempBitmap->BytesPerRow = (((RECT_BITMAP_WIDTH + 15) >> 4) << 1);
+    rastPort2.BitMap = tempBitmap;
+
+    WritePixelArray8(&rastPort1, 0, 0, RECT_BITMAP_WIDTH - 1,
+                     RECT_BITMAP_HEIGHT - 1, destBuffer, &rastPort2);
+
+    tempBitmap->Rows = backupRows;
+    tempBitmap->BytesPerRow = backupBytesPerRow;
+    FreeBitMap(tempBitmap);
+#else
     struct c2pStruct c2p;
     c2p.bmap = rectBitmap;
     c2p.startX = 0;
@@ -171,6 +199,7 @@ void blitRotationResult(void)
               RECT_BITMAP_POS_X, RECT_BITMAP_POS_Y,
               RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT, 0x00C0,
               0xff, NULL);
+#endif
 }
 
 BOOL initScreen(struct BitMap **b, struct Screen **s)
