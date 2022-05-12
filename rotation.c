@@ -2,92 +2,92 @@
 
 USHORT currentDegree = DEGREE_RESOLUTION;
 
-float cosLookup[] = {\
-   1.0,\
-   0.98481,\
-   0.93969,\
-   0.86603,\
-   0.76604,\
-   0.64279,\
-   0.5,\
-   0.34202,\
-   0.17365,\
-   0.0,\
-   -0.17365,\
-   -0.34202,\
-   -0.5,\
-   -0.64279,\
-   -0.76604,\
-   -0.86603,\
-   -0.93969,\
-   -0.98481,\
-   -1.0,\
-   -0.98481,\
-   -0.93969,\
-   -0.86603,\
-   -0.76604,\
-   -0.64279,\
-   -0.5,\
-   -0.34202,\
-   -0.17365,\
-   -0.0,\
-   0.17365,\
-   0.34202,\
-   0.5,\
-   0.64279,\
-   0.76604,\
-   0.86603,\
-   0.93969,\
-   0.98481\
+int cosLookup[] = {\
+   FLOATTOFIX(1.0),\
+   FLOATTOFIX(0.9848),\
+   FLOATTOFIX(0.9397),\
+   FLOATTOFIX(0.866),\
+   FLOATTOFIX(0.766),\
+   FLOATTOFIX(0.6428),\
+   FLOATTOFIX(0.5),\
+   FLOATTOFIX(0.342),\
+   FLOATTOFIX(0.1736),\
+   FLOATTOFIX(0.0),\
+   FLOATTOFIX(-0.1736),\
+   FLOATTOFIX(-0.342),\
+   FLOATTOFIX(-0.5),\
+   FLOATTOFIX(-0.6428),\
+   FLOATTOFIX(-0.766),\
+   FLOATTOFIX(-0.866),\
+   FLOATTOFIX(-0.9397),\
+   FLOATTOFIX(-0.9848),\
+   FLOATTOFIX(-1.0),\
+   FLOATTOFIX(-0.9848),\
+   FLOATTOFIX(-0.9397),\
+   FLOATTOFIX(-0.866),\
+   FLOATTOFIX(-0.766),\
+   FLOATTOFIX(-0.6428),\
+   FLOATTOFIX(-0.5),\
+   FLOATTOFIX(-0.342),\
+   FLOATTOFIX(-0.1736),\
+   FLOATTOFIX(-0.0),\
+   FLOATTOFIX(0.1736),\
+   FLOATTOFIX(0.342),\
+   FLOATTOFIX(0.5),\
+   FLOATTOFIX(0.6428),\
+   FLOATTOFIX(0.766),\
+   FLOATTOFIX(0.866),\
+   FLOATTOFIX(0.9397),\
+   FLOATTOFIX(0.9848)\
 };
 
-float sinLookup[] = {\
-   0.0,\
-   0.17365,\
-   0.34202,\
-   0.5,\
-   0.64279,\
-   0.76604,\
-   0.86603,\
-   0.93969,\
-   0.98481,\
-   1.0,\
-   0.98481,\
-   0.93969,\
-   0.86603,\
-   0.76604,\
-   0.64279,\
-   0.5,\
-   0.34202,\
-   0.17365,\
-   0.0,\
-   -0.17365,\
-   -0.34202,\
-   -0.5,\
-   -0.64279,\
-   -0.76604,\
-   -0.86603,\
-   -0.93969,\
-   -0.98481,\
-   -1.0,\
-   -0.98481,\
-   -0.93969,\
-   -0.86603,\
-   -0.76604,\
-   -0.64279,\
-   -0.5,\
-   -0.34202,\
-   -0.17365\
+int sinLookup[] = {\
+   FLOATTOFIX(0.0),\
+   FLOATTOFIX(0.1736),\
+   FLOATTOFIX(0.342),\
+   FLOATTOFIX(0.5),\
+   FLOATTOFIX(0.6428),\
+   FLOATTOFIX(0.766),\
+   FLOATTOFIX(0.866),\
+   FLOATTOFIX(0.9397),\
+   FLOATTOFIX(0.9848),\
+   FLOATTOFIX(1.0),\
+   FLOATTOFIX(0.9848),\
+   FLOATTOFIX(0.9397),\
+   FLOATTOFIX(0.866),\
+   FLOATTOFIX(0.766),\
+   FLOATTOFIX(0.6428),\
+   FLOATTOFIX(0.5),\
+   FLOATTOFIX(0.342),\
+   FLOATTOFIX(0.1736),\
+   FLOATTOFIX(0.0),\
+   FLOATTOFIX(-0.1736),\
+   FLOATTOFIX(-0.342),\
+   FLOATTOFIX(-0.5),\
+   FLOATTOFIX(-0.6428),\
+   FLOATTOFIX(-0.766),\
+   FLOATTOFIX(-0.866),\
+   FLOATTOFIX(-0.9397),\
+   FLOATTOFIX(-0.9848),\
+   FLOATTOFIX(-1.0),\
+   FLOATTOFIX(-0.9848),\
+   FLOATTOFIX(-0.9397),\
+   FLOATTOFIX(-0.866),\
+   FLOATTOFIX(-0.766),\
+   FLOATTOFIX(-0.6428),\
+   FLOATTOFIX(-0.5),\
+   FLOATTOFIX(-0.342),\
+   FLOATTOFIX(-0.1736)\
 };
 
 // apply rotation matrix
 void rotatePixel(int dest_x, int *src_x, int *src_y,
-                 float y_mult_sin, float y_mult_cos,
+                 int y_mult_sin, int y_mult_cos,
                  UWORD i)
 {
-    float f_x = (float) dest_x;
-    *src_x = (int)(f_x * cosLookup[i] - y_mult_sin);
-    *src_y = (int)(f_x * sinLookup[i] + y_mult_cos);
+    int f_x = INTTOFIX(dest_x);
+    *src_x = FIXTOINT(FIXMULT(f_x, cosLookup[i]) - y_mult_sin);
+    *src_y = FIXTOINT(FIXMULT(f_x, sinLookup[i]) + y_mult_cos);
 }
 
 void rotate(struct RotationData *rd)
@@ -96,7 +96,7 @@ void rotate(struct RotationData *rd)
     int src_index, dest_index;
     int dest_x, dest_y;
     int src_x, src_y;
-    float y_mult_sin, y_mult_cos;
+    int y_mult_sin, y_mult_cos;
     UWORD lookupIndex;
 
     // iterate over destination array
@@ -105,8 +105,8 @@ void rotate(struct RotationData *rd)
     {
         // precalculate these values to speed things up
         dest_y = (rd->height / 2) - y;
-        y_mult_sin = ((float) dest_y) * sinLookup[lookupIndex];
-        y_mult_cos = ((float) dest_y) * cosLookup[lookupIndex];
+        y_mult_sin = FIXMULT(INTTOFIX(dest_y), sinLookup[lookupIndex]);
+        y_mult_cos = FIXMULT(INTTOFIX(dest_y), cosLookup[lookupIndex]);
 
         for (x = 0; x < rd->width; x++)
         {

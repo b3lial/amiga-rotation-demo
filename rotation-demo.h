@@ -41,6 +41,19 @@
 
 #define NATIVE_CONVERTER
 
+// credits to: https://coronax.wordpress.com/2014/01/31/running-with-the-numbers/
+#define FIXSHIFT 16        // shift 16 bits = scale factor 65536
+#define HALFSHIFT 8
+// convert float to fix (and back)
+#define FLOATTOFIX(x) ((int)((x) * (1<<FIXSHIFT)))
+#define FIXTOFLOAT(x) ((float)(x) / (1<<FIXSHIFT))
+// convert int to fix (and back)
+#define INTTOFIX(x) ((x)<<FIXSHIFT)
+#define FIXTOINT(x) ((x)>>FIXSHIFT)
+// multiply and divide
+#define FIXMULT(x,y) (((x)>>HALFSHIFT)*((y)>>HALFSHIFT))
+#define FIXDIV(x,y) (((x)/(y>>HALFSHIFT))<<HALFSHIFT)
+
 #define ROTATION_DEPTH 1
 #define ROTATION_COLORS 2
 #define ROTATION_WIDTH 320
@@ -70,7 +83,7 @@ void rotate(struct RotationData *rd);
 void blitRotationResult(void);
 void switchScreenData();
 void rotatePixel(int dest_x, int *new_x, int *new_y,
-                 float y_mult_sin, float y_mult_cos,
+                 int y_mult_sin, int y_mult_cos,
                  UWORD lookupIndex);
 
 #endif
