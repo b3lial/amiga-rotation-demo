@@ -6,6 +6,10 @@ struct BitMap *mainBitmap1 = NULL;
 struct BitMap *mainBitmap2 = NULL;
 struct BitMap *rectBitmap = NULL;
 
+struct BitMap *tempBitmap = NULL;
+UWORD backupBytesPerRow;
+UWORD backupRows;
+
 struct Screen *mainScreen1 = NULL;
 struct Screen *mainScreen2 = NULL;
 struct Screen *my_wbscreen_ptr;
@@ -34,10 +38,21 @@ int main(void)
     SetPointer(my_wbscreen_ptr->FirstWindow, emptyPointer, 8, 8, -6, 0);
     UnlockPubScreen(NULL, my_wbscreen_ptr);
 
+    // allocate temp bitmap 
+    tempBitmap = AllocBitMap(RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT,
+                             ROTATION_DEPTH, BMF_CLEAR, NULL);
+    if(!tempBitmap){
+        goto _exit_main;
+    }
+    backupRows = tempBitmap->Rows;
+    tempBitmap->Rows = 1;
+    backupBytesPerRow = tempBitmap->BytesPerRow;
+    tempBitmap->BytesPerRow = (((RECT_BITMAP_WIDTH + 15) >> 4) << 1);
+
     // create pal screens for double buffering
     if (!initScreen(&mainBitmap1, &mainScreen1))
     {
-        goto _exit_main;
+        goto _exit_free_temp_bitmap;
     }
     if (!initScreen(&mainBitmap2, &mainScreen2))
     {
@@ -130,6 +145,10 @@ _exit_free_first_screen:
     CloseScreen(mainScreen1);
     WaitTOF();
     FreeBitMap(mainBitmap1);
+_exit_free_temp_bitmap:
+    tempBitmap->Rows = backupRows;
+    tempBitmap->BytesPerRow = backupBytesPerRow;
+    FreeBitMap(tempBitmap);
 _exit_main:
     // restore mouse
     my_wbscreen_ptr = LockPubScreen("Workbench");
@@ -161,30 +180,14 @@ void blitRotationResult(void)
 #ifdef NATIVE_CONVERTER
     struct RastPort rastPort1 = {0};
     struct RastPort rastPort2 = {0};
-    struct BitMap *tempBitmap = NULL;
-    UWORD backupBytesPerRow;
-    UWORD backupRows;
-
     InitRastPort(&rastPort1);
     InitRastPort(&rastPort2);
 
     rastPort1.BitMap = rectBitmap;
-
-    tempBitmap = AllocBitMap(RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT,
-                             ROTATION_DEPTH, BMF_CLEAR, NULL);
     rastPort2.Layer = NULL;
-    backupRows = tempBitmap->Rows;
-    tempBitmap->Rows = 1;
-    backupBytesPerRow = tempBitmap->BytesPerRow;
-    tempBitmap->BytesPerRow = (((RECT_BITMAP_WIDTH + 15) >> 4) << 1);
     rastPort2.BitMap = tempBitmap;
-
     WritePixelArray8(&rastPort1, 0, 0, RECT_BITMAP_WIDTH - 1,
                      RECT_BITMAP_HEIGHT - 1, destBuffer, &rastPort2);
-
-    tempBitmap->Rows = backupRows;
-    tempBitmap->BytesPerRow = backupBytesPerRow;
-    FreeBitMap(tempBitmap);
 #else
     struct c2pStruct c2p;
     c2p.bmap = rectBitmap;
