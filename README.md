@@ -30,6 +30,7 @@ This implemetation starts with a series of boiler plate code statements:
 I wanted to make sure it really uses the memory of my accelerator card).
 * Allocate memory for color table
 * Create `rectBitmap` which will contain the square
+* Paint square into `rectBitmap`, transform to chunky format and save in `srcBuffer`
 
 Afterwards, this example runs in a loop which
 
@@ -40,4 +41,36 @@ Afterwards, this example runs in a loop which
 In case of program termination, the previously allocated buffers are freed.
 
 ## Rotation Algorithm
-...
+The rotation is perfomed in `rotate()` which gets the following parameters:
+
+* Source buffer `srcBuffer` (contains the original square)
+* Destination buffer `destBuffer`
+* Rotation angle in in degrees
+* Buffer width and height
+
+The rotation algorithm iterates through each y and x pixel
+of the destination buffer. Each of these pixels is multiplied
+with a rotation matrix:
+
+* x = `x*cos(360 - alpha) - y*sin(360 - alpha)`
+* y = `x*sin(360 - alpha) + y*cos(360 - alpha)`
+
+The resulting (x,y) coordinates are transfomed into array indices and used to to write the color values
+of `srcBuffer` into `destBuffer`:
+
+```C
+dest_index = x + y * rd->width;
+src_index = (src_x + (rd->width / 2)) +
+            ((src_y + (rd->height / 2)) * rd->width);
+if (src_index < 0 || src_index >= (rd->height * rd->width))
+{
+    continue;
+}
+(rd->dest)[dest_index] = (rd->src)[src_index];
+```
+
+## Optimsation
+The first implementation was really slow, maybe one frame per 5 seconds on
+my A1200 with 40 Mhz 68030 CPU. So, I added the following optimsations:
+
+* ...
