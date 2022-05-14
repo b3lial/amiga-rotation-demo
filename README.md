@@ -69,7 +69,7 @@ if (src_index < 0 || src_index >= (rd->height * rd->width))
 (rd->dest)[dest_index] = (rd->src)[src_index];
 ```
 
-## Optimsation
+## Optimization
 The first implementation was really slow, maybe one frame per 5 seconds on
 my A1200 with 40Mhz 68030 CPU. So, I added the following optimsations:
 
