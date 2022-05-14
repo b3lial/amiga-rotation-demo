@@ -35,7 +35,7 @@ I wanted to make sure it really uses the memory of my accelerator card).
 Afterwards, this example runs in a loop which
 
 * Rotates the square by 10 degrees
-* And shows the result on screen
+* Shows the result on screen
 * Checks whether mouse key was pressed. If yes: Terminate
 
 In case of program termination, the previously allocated buffers are freed.
@@ -71,6 +71,12 @@ if (src_index < 0 || src_index >= (rd->height * rd->width))
 
 ## Optimsation
 The first implementation was really slow, maybe one frame per 5 seconds on
-my A1200 with 40 Mhz 68030 CPU. So, I added the following optimsations:
+my A1200 with 40Mhz 68030 CPU. So, I added the following optimsations:
 
-* ...
+* I moved some multiplications which need the current _y_ value from `rotatePixel()`
+into the _y_ for loop. This way, the calculations are only performed once
+per row and not for each pixel.
+* The scripts [lookup_cos.py](lookup_cos.py) and [lookup_sin.py](lookup_sin.py)
+precalculate the values of the trigonometric functions and create lookup tables.
+* I removed the float calculations and switched to fix point with a set of basic
+macros I found [here](https://coronax.wordpress.com/2014/01/31/running-with-the-numbers/).
