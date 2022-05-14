@@ -26,12 +26,13 @@ UWORD *colortable0;
 UBYTE *srcBuffer;
 UBYTE *destBuffer;
 
+/*
+ * Create two Screens and two BitMap as Screen content
+ * for double buffering. Create a third BitMap, draw a
+ * rectangle into it, rotate and blit into Screen
+ */
 int main(void)
 {
-    struct RastPort rastPort = {0};
-    struct p2cStruct p2c = {0};
-    struct RotationData rd = {0};
-
     // hide mouse
     emptyPointer = AllocVec(22 * sizeof(UWORD), MEMF_CHIP | MEMF_CLEAR);
     my_wbscreen_ptr = LockPubScreen("Workbench");
@@ -96,6 +97,50 @@ int main(void)
         goto _exit_free_colortable;
     }
 
+    /* main() just does boring boiler plate stuff,
+     * real rotation work is done in execute()
+     */
+    execute();
+
+    FreeBitMap(rectBitmap);
+_exit_free_colortable:
+    FreeVec(colortable0);
+_exit_free_dest_chunky:
+    FreeVec(destBuffer);
+_exit_free_src_chunky:
+    FreeVec(srcBuffer);
+_exit_free_second_screen:
+    CloseScreen(mainScreen2);
+    WaitTOF();
+    FreeBitMap(mainBitmap2);
+_exit_free_first_screen:
+    CloseScreen(mainScreen1);
+    WaitTOF();
+    FreeBitMap(mainBitmap1);
+_exit_free_temp_bitmap:
+    tempBitmap->Rows = backupRows;
+    tempBitmap->BytesPerRow = backupBytesPerRow;
+    FreeBitMap(tempBitmap);
+_exit_main:
+    // restore mouse
+    my_wbscreen_ptr = LockPubScreen("Workbench");
+    ClearPointer(my_wbscreen_ptr->FirstWindow);
+    UnlockPubScreen(NULL, my_wbscreen_ptr);
+    FreeVec(emptyPointer);
+
+    exit(RETURN_OK);
+}
+
+/*
+ * Paint rectangle into BitMap, tranform to chunky buffer, rotate
+ * by 10 degreee in a loop, transform back to planar and draw result on
+ * Screen
+ */
+void execute(){
+    struct RastPort rastPort = {0};
+    struct p2cStruct p2c = {0};
+    struct RotationData rd = {0};
+
     // draw red rectangle into bitmap
     InitRastPort(&rastPort);
     rastPort.BitMap = rectBitmap;
@@ -128,35 +173,7 @@ int main(void)
         blitRotationResult();
         ScreenToFront(currentScreen);
         rd.angle = (rd.angle == 360) ? 10 : rd.angle + DEGREE_RESOLUTION;
-    }
-
-    FreeBitMap(rectBitmap);
-_exit_free_colortable:
-    FreeVec(colortable0);
-_exit_free_dest_chunky:
-    FreeVec(destBuffer);
-_exit_free_src_chunky:
-    FreeVec(srcBuffer);
-_exit_free_second_screen:
-    CloseScreen(mainScreen2);
-    WaitTOF();
-    FreeBitMap(mainBitmap2);
-_exit_free_first_screen:
-    CloseScreen(mainScreen1);
-    WaitTOF();
-    FreeBitMap(mainBitmap1);
-_exit_free_temp_bitmap:
-    tempBitmap->Rows = backupRows;
-    tempBitmap->BytesPerRow = backupBytesPerRow;
-    FreeBitMap(tempBitmap);
-_exit_main:
-    // restore mouse
-    my_wbscreen_ptr = LockPubScreen("Workbench");
-    ClearPointer(my_wbscreen_ptr->FirstWindow);
-    UnlockPubScreen(NULL, my_wbscreen_ptr);
-    FreeVec(emptyPointer);
-
-    exit(RETURN_OK);
+    }    
 }
 
 void switchScreenData()

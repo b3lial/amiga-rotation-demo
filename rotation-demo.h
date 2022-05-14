@@ -79,6 +79,7 @@ struct RotationData{
 };
 
 BOOL initScreen(struct BitMap **bm, struct Screen **s);
+void execute(void);
 void rotate(struct RotationData *rd);
 void blitRotationResult(void);
 void switchScreenData();
