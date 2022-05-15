@@ -53,10 +53,10 @@ The rotation algorithm iterates through each y and x pixel
 of the destination buffer. Each pixel is multiplied
 with a rotation matrix:
 
-* x = `x*cos(360 - alpha) - y*sin(360 - alpha)`
-* y = `x*sin(360 - alpha) + y*cos(360 - alpha)`
+* `src_x = x*cos(360 - alpha) - y*sin(360 - alpha)`
+* `src_y = x*sin(360 - alpha) + y*cos(360 - alpha)`
 
-The resulting (x,y) coordinates are transfomed into array indices and used to to write the color values
+The resulting coordinates are transfomed into array indices and used to write the color values
 of `srcBuffer` into `destBuffer`:
 
 ```C
