@@ -1,6 +1,12 @@
 # amiga-rotation-demo
 Amiga example which displays a rotating square on a PAL screen.
 
+## Video
+
+To give you a better impression, the demo can be seen on youtube:
+
+[![Amiga Square Rotation Screen Capture](https://img.youtube.com/vi/ttR2uvO1qT0/0.jpg)](https://www.youtube.com/watch?v=ttR2uvO1qT0)
+
 ## Build
 
 Two options exist. The project can be either 
