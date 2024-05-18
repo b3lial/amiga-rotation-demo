@@ -170,7 +170,7 @@ void execute(){
     {
         switchScreenData();
         rotate(&rd);
-        blitRotationResult();
+        blitRotationResult(destBuffer, rectBitmap);
         ScreenToFront(currentScreen);
         rd.angle = (rd.angle == 360) ? 10 : rd.angle + DEGREE_RESOLUTION;
     }    
@@ -192,7 +192,7 @@ void switchScreenData()
     }
 }
 
-void blitRotationResult(void)
+void blitRotationResult(UBYTE* sourceChunky, struct BitMap *destPlanar)
 {
 #ifdef NATIVE_CONVERTER
     struct RastPort rastPort1 = {0};
@@ -200,22 +200,22 @@ void blitRotationResult(void)
     InitRastPort(&rastPort1);
     InitRastPort(&rastPort2);
 
-    rastPort1.BitMap = rectBitmap;
+    rastPort1.BitMap = destPlanar;
     rastPort2.Layer = NULL;
     rastPort2.BitMap = tempBitmap;
     WritePixelArray8(&rastPort1, 0, 0, RECT_BITMAP_WIDTH - 1,
-                     RECT_BITMAP_HEIGHT - 1, destBuffer, &rastPort2);
+                     RECT_BITMAP_HEIGHT - 1, sourceChunky, &rastPort2);
 #else
     struct c2pStruct c2p;
-    c2p.bmap = rectBitmap;
+    c2p.bmap = destPlanar;
     c2p.startX = 0;
     c2p.startY = 0;
     c2p.width = RECT_BITMAP_WIDTH;
     c2p.height = RECT_BITMAP_HEIGHT;
-    c2p.chunkybuffer = destBuffer;
+    c2p.chunkybuffer = sourceChunky;
     ChunkyToPlanarAsm(&c2p);
 #endif
-    BltBitMap(rectBitmap, 0, 0, currentBitmap,
+    BltBitMap(destPlanar, 0, 0, currentBitmap,
               RECT_BITMAP_POS_X, RECT_BITMAP_POS_Y,
               RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT, 0x00C0,
               0xff, NULL);

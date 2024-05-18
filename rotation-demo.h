@@ -39,7 +39,7 @@
 
 #include "chunkyconverter/chunkyconverter.h"
 
-#define NATIVE_CONVERTER
+// #define NATIVE_CONVERTER
 
 // credits to: https://coronax.wordpress.com/2014/01/31/running-with-the-numbers/
 #define FIXSHIFT 16        // shift 16 bits = scale factor 65536
@@ -81,7 +81,7 @@ struct RotationData{
 BOOL initScreen(struct BitMap **bm, struct Screen **s);
 void execute(void);
 void rotate(struct RotationData *rd);
-void blitRotationResult(void);
+void blitRotationResult(UBYTE* sourceChunky, struct BitMap *destPlanar);
 void switchScreenData();
 void rotatePixel(int dest_x, int *new_x, int *new_y,
                  int y_mult_sin, int y_mult_cos,
