@@ -170,10 +170,14 @@ void execute(){
     {
         switchScreenData();
         rotate(&rd);
-        blitRotationResult(destBuffer, rectBitmap);
+        convertChunkyToBitmap(destBuffer, rectBitmap);
+        BltBitMap(rectBitmap, 0, 0, currentBitmap,
+                  RECT_BITMAP_POS_X, RECT_BITMAP_POS_Y,
+                  RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT, 0x00C0,
+                  0xff, NULL);
         ScreenToFront(currentScreen);
         rd.angle = (rd.angle == 360) ? 10 : rd.angle + DEGREE_RESOLUTION;
-    }    
+    }
 }
 
 void switchScreenData()
@@ -192,7 +196,7 @@ void switchScreenData()
     }
 }
 
-void blitRotationResult(UBYTE* sourceChunky, struct BitMap *destPlanar)
+void convertChunkyToBitmap(UBYTE* sourceChunky, struct BitMap *destPlanar)
 {
 #ifdef NATIVE_CONVERTER
     struct RastPort rastPort1 = {0};
@@ -215,10 +219,6 @@ void blitRotationResult(UBYTE* sourceChunky, struct BitMap *destPlanar)
     c2p.chunkybuffer = sourceChunky;
     ChunkyToPlanarAsm(&c2p);
 #endif
-    BltBitMap(destPlanar, 0, 0, currentBitmap,
-              RECT_BITMAP_POS_X, RECT_BITMAP_POS_Y,
-              RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT, 0x00C0,
-              0xff, NULL);
 }
 
 BOOL initScreen(struct BitMap **b, struct Screen **s)

@@ -81,7 +81,7 @@ struct RotationData{
 BOOL initScreen(struct BitMap **bm, struct Screen **s);
 void execute(void);
 void rotate(struct RotationData *rd);
-void blitRotationResult(UBYTE* sourceChunky, struct BitMap *destPlanar);
+void convertChunkyToBitmap(UBYTE* sourceChunky, struct BitMap *destPlanar);
 void switchScreenData();
 void rotatePixel(int dest_x, int *new_x, int *new_y,
                  int y_mult_sin, int y_mult_cos,
