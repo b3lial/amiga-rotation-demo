@@ -24,25 +24,26 @@ struct Screen *currentScreen = NULL;
 
 UWORD *colortable0;
 UBYTE *srcBuffer;
-UBYTE *destBuffer;
+UBYTE *destBuffer[DEST_BUFFER_SIZE] = {0};
 
 /*
  * Create two Screens and two BitMap as Screen content
  * for double buffering. Create a third BitMap, draw a
  * rectangle into it, rotate and blit into Screen
  */
-int main(void)
-{
+int main(void) {
+    BYTE i = 0;
+
     // hide mouse
     emptyPointer = AllocVec(22 * sizeof(UWORD), MEMF_CHIP | MEMF_CLEAR);
     my_wbscreen_ptr = LockPubScreen("Workbench");
     SetPointer(my_wbscreen_ptr->FirstWindow, emptyPointer, 8, 8, -6, 0);
     UnlockPubScreen(NULL, my_wbscreen_ptr);
 
-    // allocate temp bitmap 
+    // allocate temp bitmap
     tempBitmap = AllocBitMap(RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT,
                              ROTATION_DEPTH, BMF_CLEAR, NULL);
-    if(!tempBitmap){
+    if (!tempBitmap) {
         goto _exit_main;
     }
     backupRows = tempBitmap->Rows;
@@ -51,48 +52,35 @@ int main(void)
     tempBitmap->BytesPerRow = (((RECT_BITMAP_WIDTH + 15) >> 4) << 1);
 
     // create pal screens for double buffering
-    if (!initScreen(&mainBitmap1, &mainScreen1))
-    {
+    if (!initScreen(&mainBitmap1, &mainScreen1)) {
         goto _exit_free_temp_bitmap;
     }
-    if (!initScreen(&mainBitmap2, &mainScreen2))
-    {
+    if (!initScreen(&mainBitmap2, &mainScreen2)) {
         goto _exit_free_first_screen;
     }
     bufferSelector = TRUE;
-    currentScreen = mainScreen1; // main screen turn on ;)
+    currentScreen = mainScreen1;  // main screen turn on ;)
     currentBitmap = mainBitmap1;
 
-    // allocate memory for chunky buffer
-    srcBuffer = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, MEMF_FAST | MEMF_CLEAR);
-    if (!srcBuffer)
-    {
-        printf("Error: Could not allocate memory for source chunky buffer\n");
+    // allocate source buffer and destination buffer array
+    if (!allocateChunkyBuffer(360 / DEGREE_RESOLUTION)) {
         goto _exit_free_second_screen;
-    }
-    destBuffer = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, MEMF_FAST | MEMF_CLEAR);
-    if (!destBuffer)
-    {
-        printf("Error: Could not allocate memory for destination chunky buffer\n");
-        goto _exit_free_src_chunky;
     }
 
     // create and assign colortable
     colortable0 = AllocVec(ROTATION_COLORS * sizeof(UWORD), MEMF_CHIP | MEMF_CLEAR);
-    if (!colortable0)
-    {
+    if (!colortable0) {
         printf("Error: Could not allocate memory for space bitmap color table\n");
-        goto _exit_free_dest_chunky;
+        goto _exit_free_chunky;
     }
-    colortable0[1] = 0x0f00; // color 1 == RED
+    colortable0[1] = 0x0f00;  // color 1 == RED
     LoadRGB4(&(mainScreen1->ViewPort), colortable0, ROTATION_COLORS);
     LoadRGB4(&(mainScreen2->ViewPort), colortable0, ROTATION_COLORS);
 
     // create bitmap with rectangle which we will use for rotation
     rectBitmap = AllocBitMap(RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT,
                              ROTATION_DEPTH, BMF_CLEAR, NULL);
-    if (!rectBitmap)
-    {
+    if (!rectBitmap) {
         printf("Error: Could not allocate memory for rectangle bitmap\n");
         goto _exit_free_colortable;
     }
@@ -105,9 +93,10 @@ int main(void)
     FreeBitMap(rectBitmap);
 _exit_free_colortable:
     FreeVec(colortable0);
-_exit_free_dest_chunky:
-    FreeVec(destBuffer);
-_exit_free_src_chunky:
+_exit_free_chunky:
+    for (i=0; i < (360 / DEGREE_RESOLUTION); i++) {
+        FreeVec(destBuffer[i]);
+    }
     FreeVec(srcBuffer);
 _exit_free_second_screen:
     CloseScreen(mainScreen2);
@@ -163,14 +152,14 @@ void execute(){
     WaitTOF();
     rd.angle = DEGREE_RESOLUTION;
     rd.src = srcBuffer;
-    rd.dest = destBuffer;
+    rd.dest = destBuffer[0];
     rd.width = RECT_BITMAP_WIDTH;
     rd.height = RECT_BITMAP_HEIGHT;
     while (!mouseCiaStatus())
     {
         switchScreenData();
         rotate(&rd);
-        convertChunkyToBitmap(destBuffer, rectBitmap);
+        convertChunkyToBitmap(destBuffer[0], rectBitmap);
         BltBitMap(rectBitmap, 0, 0, currentBitmap,
                   RECT_BITMAP_POS_X, RECT_BITMAP_POS_Y,
                   RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT, 0x00C0,
@@ -247,5 +236,43 @@ BOOL initScreen(struct BitMap **b, struct Screen **s)
 __exit_init_bitmap:
     FreeBitMap(*b);
 __exit_init_error:
+    return FALSE;
+}
+
+/**
+ * Allocate:
+ * - source chunky buffer: contains the object we want to rotate
+ * - destination chunky buffer array: contain the rotated objects
+*/
+BOOL allocateChunkyBuffer(UBYTE destBufferSize) {
+    BYTE i = 0;
+
+    if (destBufferSize == 0 || destBufferSize >= DEST_BUFFER_SIZE) {
+        printf("Error: Invalid destination buffer size\n");
+        goto _exit_chunky_source_allocation_error;
+    }
+
+    // allocate memory for chunky buffer
+    srcBuffer = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, MEMF_FAST | MEMF_CLEAR);
+    if (!srcBuffer) {
+        printf("Error: Could not allocate memory for source chunky buffer\n");
+        goto _exit_chunky_source_allocation_error;
+    }
+
+    for (i = 0; i < destBufferSize; i++) {
+        destBuffer[i] = AllocVec(RECT_BITMAP_WIDTH * RECT_BITMAP_HEIGHT, MEMF_FAST | MEMF_CLEAR);
+        if (!(destBuffer[i])) {
+            printf("Error: Could not allocate memory for destination chunky buffer array\n");
+            goto _exit_chunky_source_allocation_rollback;
+        }
+    }
+
+    return TRUE;
+
+_exit_chunky_source_allocation_rollback:
+    for (i-=1 ; i >= 0; i--) {
+        FreeVec(destBuffer[i]);
+    }
+_exit_chunky_source_allocation_error:
     return FALSE;
 }

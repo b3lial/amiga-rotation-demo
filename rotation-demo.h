@@ -70,6 +70,8 @@
 
 #define DEGREE_RESOLUTION 10
 
+#define DEST_BUFFER_SIZE 36
+
 struct RotationData{
     UBYTE* src;
     UBYTE* dest;
@@ -86,5 +88,6 @@ void switchScreenData();
 void rotatePixel(int dest_x, int *new_x, int *new_y,
                  int y_mult_sin, int y_mult_cos,
                  UWORD lookupIndex);
+BOOL allocateChunkyBuffer(UBYTE destBufferSize);
 
 #endif
