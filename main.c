@@ -125,10 +125,11 @@ _exit_main:
  * by 10 degreee in a loop, transform back to planar and draw result on
  * Screen
  */
-void execute(){
+void execute() {
     struct RastPort rastPort = {0};
     struct p2cStruct p2c = {0};
     struct RotationData rd = {0};
+    BYTE i = 0;
 
     // draw red rectangle into bitmap
     InitRastPort(&rastPort);
@@ -150,22 +151,30 @@ void execute(){
     // show rotation animation and wait for mouse click for exit
     ScreenToFront(currentScreen);
     WaitTOF();
-    rd.angle = DEGREE_RESOLUTION;
+
+    // rotate object and store rotated results in destination array chunky buffers
+    rd.angle = 0;
     rd.src = srcBuffer;
     rd.dest = destBuffer[0];
     rd.width = RECT_BITMAP_WIDTH;
     rd.height = RECT_BITMAP_HEIGHT;
-    while (!mouseCiaStatus())
-    {
-        switchScreenData();
+    for (i=0; i< 360 / DEGREE_RESOLUTION; i++) {
         rotate(&rd);
-        convertChunkyToBitmap(destBuffer[0], rectBitmap);
+        rd.angle += DEGREE_RESOLUTION;
+        rd.dest = destBuffer[i];
+    }
+
+    // show rotation animation, chunky buffer objects are converted to planar
+    i = 1;
+    while (!mouseCiaStatus()) {
+        switchScreenData();
+        convertChunkyToBitmap(destBuffer[i], rectBitmap);
         BltBitMap(rectBitmap, 0, 0, currentBitmap,
                   RECT_BITMAP_POS_X, RECT_BITMAP_POS_Y,
                   RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT, 0x00C0,
                   0xff, NULL);
         ScreenToFront(currentScreen);
-        rd.angle = (rd.angle == 360) ? 10 : rd.angle + DEGREE_RESOLUTION;
+        i = (i >= (360 / DEGREE_RESOLUTION)) ? 0 : i + 1;
     }
 }
 
@@ -247,8 +256,8 @@ __exit_init_error:
 BOOL allocateChunkyBuffer(UBYTE destBufferSize) {
     BYTE i = 0;
 
-    if (destBufferSize == 0 || destBufferSize >= DEST_BUFFER_SIZE) {
-        printf("Error: Invalid destination buffer size\n");
+    if (destBufferSize == 0 || destBufferSize > DEST_BUFFER_SIZE) {
+        printf("Error: Invalid destination buffer size %d\n", destBufferSize);
         goto _exit_chunky_source_allocation_error;
     }
 
