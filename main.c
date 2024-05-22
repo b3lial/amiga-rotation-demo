@@ -167,6 +167,9 @@ void execute() {
     // show rotation animation, chunky buffer objects are converted to planar
     i = 1;
     while (!mouseCiaStatus()) {
+        if (i >= (360 / DEGREE_RESOLUTION)) {
+            i = 0;
+        }
         switchScreenData();
         convertChunkyToBitmap(destBuffer[i], rectBitmap);
         BltBitMap(rectBitmap, 0, 0, currentBitmap,
@@ -175,9 +178,6 @@ void execute() {
                   0xff, NULL);
         ScreenToFront(currentScreen);
         i += 1;
-        if (i >= (360 / DEGREE_RESOLUTION)) {
-            i = 0;
-        }
     }
 }
 
