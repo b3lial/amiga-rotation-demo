@@ -110,17 +110,20 @@ void rotate(struct RotationData *rd)
     int y_mult_sin, y_mult_cos;
     UWORD lookupIndex;
 
+    // in this case, we can simply perform a copy
+    if (rd->angle == 360 || rd->angle == 0) {
+        CopyMem(rd->src, rd->dest, rd->width * rd->height);
+    }
+
     // iterate over destination array
     lookupIndex = (360 - rd->angle) / DEGREE_RESOLUTION;
-    for (y = 0; y < rd->height; y++)
-    {
+    for (y = 0; y < rd->height; y++) {
         // precalculate these values to speed things up
         dest_y = (rd->height / 2) - y;
         y_mult_sin = FIXMULT(INTTOFIX(dest_y), sinLookup[lookupIndex]);
         y_mult_cos = FIXMULT(INTTOFIX(dest_y), cosLookup[lookupIndex]);
 
-        for (x = 0; x < rd->width; x++)
-        {
+        for (x = 0; x < rd->width; x++) {
             // calculate src x/y coordinates
             dest_x = x - (rd->width / 2);
             rotatePixel(dest_x, &src_x, &src_y,
@@ -131,8 +134,7 @@ void rotate(struct RotationData *rd)
             dest_index = x + y * rd->width;
             src_index = (src_x + (rd->width / 2)) +
                         ((src_y + (rd->height / 2)) * rd->width);
-            if (src_index < 0 || src_index >= (rd->height * rd->width))
-            {
+            if (src_index < 0 || src_index >= (rd->height * rd->width)) {
                 continue;
             }
             (rd->dest)[dest_index] = (rd->src)[src_index];

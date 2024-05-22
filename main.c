@@ -158,7 +158,7 @@ void execute() {
     rd.dest = destBuffer[0];
     rd.width = RECT_BITMAP_WIDTH;
     rd.height = RECT_BITMAP_HEIGHT;
-    for (i=0; i< 360 / DEGREE_RESOLUTION; i++) {
+    for (i=0; i < 360 / DEGREE_RESOLUTION; i++) {
         rotate(&rd);
         rd.angle += DEGREE_RESOLUTION;
         rd.dest = destBuffer[i];
@@ -167,6 +167,7 @@ void execute() {
     // show rotation animation, chunky buffer objects are converted to planar
     i = 1;
     while (!mouseCiaStatus()) {
+        printf("Rotating object by %d degree\n", i * DEGREE_RESOLUTION);
         switchScreenData();
         convertChunkyToBitmap(destBuffer[i], rectBitmap);
         BltBitMap(rectBitmap, 0, 0, currentBitmap,
@@ -174,7 +175,10 @@ void execute() {
                   RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT, 0x00C0,
                   0xff, NULL);
         ScreenToFront(currentScreen);
-        i = (i >= (360 / DEGREE_RESOLUTION)) ? 0 : i + 1;
+        i += 1;
+        if (i >= (360 / DEGREE_RESOLUTION)) {
+            i = 0;
+        }
     }
 }
 
