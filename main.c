@@ -167,7 +167,6 @@ void execute() {
     // show rotation animation, chunky buffer objects are converted to planar
     i = 1;
     while (!mouseCiaStatus()) {
-        printf("Rotating object by %d degree\n", i * DEGREE_RESOLUTION);
         switchScreenData();
         convertChunkyToBitmap(destBuffer[i], rectBitmap);
         BltBitMap(rectBitmap, 0, 0, currentBitmap,

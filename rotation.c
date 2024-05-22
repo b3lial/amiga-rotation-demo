@@ -113,6 +113,7 @@ void rotate(struct RotationData *rd)
     // in this case, we can simply perform a copy
     if (rd->angle == 360 || rd->angle == 0) {
         CopyMem(rd->src, rd->dest, rd->width * rd->height);
+        return;
     }
 
     // iterate over destination array
