@@ -155,13 +155,12 @@ void execute() {
     // rotate object and store rotated results in destination array chunky buffers
     rd.angle = 0;
     rd.src = srcBuffer;
-    rd.dest = destBuffer[0];
     rd.width = RECT_BITMAP_WIDTH;
     rd.height = RECT_BITMAP_HEIGHT;
     for (i=0; i < 360 / DEGREE_RESOLUTION; i++) {
+        rd.dest = destBuffer[i];
         rotate(&rd);
         rd.angle += DEGREE_RESOLUTION;
-        rd.dest = destBuffer[i];
     }
 
     // show rotation animation, chunky buffer objects are converted to planar
