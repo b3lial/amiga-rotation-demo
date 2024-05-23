@@ -85,9 +85,14 @@ void execute(void);
 void rotate(struct RotationData *rd);
 void convertChunkyToBitmap(UBYTE* sourceChunky, struct BitMap *destPlanar);
 void switchScreenData();
+
+BOOL initRotationEngine(UBYTE rotationSteps);
 void rotatePixel(int dest_x, int *new_x, int *new_y,
                  int y_mult_sin, int y_mult_cos,
                  UWORD lookupIndex);
-BOOL allocateChunkyBuffer(UBYTE destBufferSize);
+BOOL allocateChunkyBuffer(void);
+void freeChunkyBuffer(void);
+UBYTE* getSourceBuffer(void);
+UBYTE* getDestBuffer(UBYTE index);
 
 #endif
