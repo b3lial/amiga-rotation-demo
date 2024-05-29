@@ -59,7 +59,7 @@ int main(void) {
     currentBitmap = mainBitmap1;
 
     // allocate source buffer and destination buffer array
-    if (!initRotationEngine(360 / DEGREE_RESOLUTION)) {
+    if (!initRotationEngine(360 / DEGREE_RESOLUTION, RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT)) {
         goto _exit_free_second_screen;
     }
 
@@ -173,16 +173,12 @@ void execute() {
     }
 }
 
-void switchScreenData()
-{
-    if (bufferSelector)
-    {
+void switchScreenData() {
+    if (bufferSelector) {
         currentScreen = mainScreen2;
         currentBitmap = mainBitmap2;
         bufferSelector = FALSE;
-    }
-    else
-    {
+    } else {
         currentScreen = mainScreen1;
         currentBitmap = mainBitmap1;
         bufferSelector = TRUE;
@@ -220,8 +216,7 @@ BOOL initScreen(struct BitMap **b, struct Screen **s)
     *b = AllocBitMap(ROTATION_WIDTH, ROTATION_HEIGHT,
                      ROTATION_DEPTH, BMF_DISPLAYABLE | BMF_CLEAR,
                      NULL);
-    if (!*b)
-    {
+    if (!*b) {
         printf("Error: Could not allocate memory for screen bitmap\n");
         goto __exit_init_error;
     }
@@ -230,8 +225,7 @@ BOOL initScreen(struct BitMap **b, struct Screen **s)
     *s = createScreen(*b, TRUE, 0, 0,
                       ROTATION_WIDTH, ROTATION_HEIGHT,
                       ROTATION_DEPTH, NULL);
-    if (!*s)
-    {
+    if (!*s) {
         printf("Error: Could not allocate memory for logo screen\n");
         goto __exit_init_bitmap;
     }

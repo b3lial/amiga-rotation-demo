@@ -1,7 +1,7 @@
 // Copyright 2021 Christian Ammann
 
-#ifndef __ROTATION_DEMO_H__
-#define __ROTATION_DEMO_H__
+#ifndef ROTATION_DEMO_H_
+#define ROTATION_DEMO_H_
 
 #define MAX_CHAR_HEIGHT 33
 #define MAX_CHAR_WIDTH 30
@@ -86,7 +86,7 @@ void rotate(struct RotationData *rd);
 void convertChunkyToBitmap(UBYTE* sourceChunky, struct BitMap *destPlanar);
 void switchScreenData();
 
-BOOL initRotationEngine(UBYTE rotationSteps);
+BOOL initRotationEngine(UBYTE rs, USHORT bw, USHORT bh);
 void rotatePixel(int dest_x, int *new_x, int *new_y,
                  int y_mult_sin, int y_mult_cos,
                  UWORD lookupIndex);
@@ -95,4 +95,4 @@ void freeChunkyBuffer(void);
 UBYTE* getSourceBuffer(void);
 UBYTE* getDestBuffer(UBYTE index);
 
-#endif
+#endif  // ROTATION_DEMO_H_
