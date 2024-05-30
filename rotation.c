@@ -109,6 +109,26 @@ void rotatePixel(int dest_x, int *src_x, int *src_y,
 }
 
 /**
+ * Rotate the element in source buffer and store the results
+ * in destination buffer array. 
+ */
+void rotateAll() {
+    struct RotationData rd = {0};
+    UBYTE i = 0;
+
+    rd.angle = 0;
+    rd.src = srcBuffer;
+    rd.width = bitmapWidth;
+    rd.height = bitmapHeight;
+    for (i=0; i < rotationSteps; i++) {
+        rd.dest = destBuffer[i];
+        rotate(&rd);
+        rd.angle += (360 / rotationSteps);  // 360 degrees / number of steps == rotation degree
+    }
+    return;
+}
+
+/**
  * Gets a source chunky buffer, rotates it by degree value
  * in RotationData and writes the result into destination
  * chunky buffer. Rotation is performed via matrix multiplcation

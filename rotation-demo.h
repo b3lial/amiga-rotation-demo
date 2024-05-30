@@ -67,9 +67,9 @@
 #define RECT_HEIGHT 90
 #define RECT_X 35
 #define RECT_Y 35
+#define RECT_ROTATION_STEPS 36
 
 #define DEGREE_RESOLUTION 10
-
 #define DEST_BUFFER_SIZE 36
 
 struct RotationData{
@@ -82,9 +82,10 @@ struct RotationData{
 
 BOOL initScreen(struct BitMap **bm, struct Screen **s);
 void execute(void);
+void rotateAll(void);
 void rotate(struct RotationData *rd);
 void convertChunkyToBitmap(UBYTE* sourceChunky, struct BitMap *destPlanar);
-void switchScreenData();
+void switchScreenData(void);
 
 BOOL initRotationEngine(UBYTE rs, USHORT bw, USHORT bh);
 void rotatePixel(int dest_x, int *new_x, int *new_y,

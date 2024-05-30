@@ -59,7 +59,7 @@ int main(void) {
     currentBitmap = mainBitmap1;
 
     // allocate source buffer and destination buffer array
-    if (!initRotationEngine(360 / DEGREE_RESOLUTION, RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT)) {
+    if (!initRotationEngine(RECT_ROTATION_STEPS, RECT_BITMAP_WIDTH, RECT_BITMAP_HEIGHT)) {
         goto _exit_free_second_screen;
     }
 
@@ -121,8 +121,7 @@ _exit_main:
 void execute() {
     struct RastPort rastPort = {0};
     struct p2cStruct p2c = {0};
-    struct RotationData rd = {0};
-    BYTE i = 0;
+    UBYTE i = 0;
 
     // draw red rectangle into bitmap
     InitRastPort(&rastPort);
@@ -146,20 +145,12 @@ void execute() {
     WaitTOF();
 
     // rotate object and store rotated results in destination array chunky buffers
-    rd.angle = 0;
-    rd.src = getSourceBuffer();
-    rd.width = RECT_BITMAP_WIDTH;
-    rd.height = RECT_BITMAP_HEIGHT;
-    for (i=0; i < 360 / DEGREE_RESOLUTION; i++) {
-        rd.dest = getDestBuffer(i);
-        rotate(&rd);
-        rd.angle += DEGREE_RESOLUTION;
-    }
+    rotateAll();
 
     // show rotation animation, chunky buffer objects are converted to planar
     i = 1;
     while (!mouseCiaStatus()) {
-        if (i >= (360 / DEGREE_RESOLUTION)) {
+        if (i >= RECT_ROTATION_STEPS) {
             i = 0;
         }
         switchScreenData();
