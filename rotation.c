@@ -117,9 +117,6 @@ void rotateAll() {
     UBYTE i = 0;
 
     rd.angle = 0;
-    rd.src = srcBuffer;
-    rd.width = bitmapWidth;
-    rd.height = bitmapHeight;
     for (i=0; i < rotationSteps; i++) {
         rd.dest = destBuffer[i];
         rotate(&rd);
@@ -145,7 +142,7 @@ void rotate(struct RotationData *rd)
 
     // in this case, we can simply perform a copy
     if (rd->angle == 360 || rd->angle == 0) {
-        CopyMem(rd->src, rd->dest, bitmapWidth * bitmapHeight);
+        CopyMem(srcBuffer, rd->dest, bitmapWidth * bitmapHeight);
         return;
     }
 
@@ -171,7 +168,7 @@ void rotate(struct RotationData *rd)
             if (src_index < 0 || src_index >= (bitmapHeight * bitmapWidth)) {
                 continue;
             }
-            (rd->dest)[dest_index] = (rd->src)[src_index];
+            (rd->dest)[dest_index] = (srcBuffer)[src_index];
         }
     }
 }

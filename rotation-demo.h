@@ -73,11 +73,8 @@
 #define DEST_BUFFER_SIZE 36
 
 struct RotationData{
-    UBYTE* src;
     UBYTE* dest;
     USHORT angle;
-    USHORT width;
-    USHORT height;
 };
 
 BOOL initScreen(struct BitMap **bm, struct Screen **s);
